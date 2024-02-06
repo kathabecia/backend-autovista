@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Supplier;
+use App\Models\Sale;
 use Illuminate\Http\Request;
+use App\Http\Requests\SaleRequest;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SupplierRequest;
 
-class SupplierController extends Controller
+class SaleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,12 +15,12 @@ class SupplierController extends Controller
     public function index(Request $request)
     {
         // Query builder instance
-        $query = Supplier::query();
+        $query = Sale::query();
 
         // Cater Search use "keyword"
         if ($request->keyword) {
             $query->where(function ($query) use ($request) {
-                $query->where('supplier_name', 'like', '%' . $request->keyword . '%');
+                $query->where('VIN', 'like', '%' . $request->keyword . '%');
             });
         }
 
@@ -37,14 +37,14 @@ class SupplierController extends Controller
      */
 
     //  change Request to the newly created request folder 
-    public function store(SupplierRequest $request)
+    public function store(SaleRequest $request)
     {
         // Retrieve the validated input data...
         $validated = $request->validated();
 
-        $supplier = Supplier::create($validated);
+        $sale = Sale::create($validated);
 
-        return $supplier;
+        return $sale;
     }
 
     /**
@@ -52,22 +52,22 @@ class SupplierController extends Controller
      */
     public function show(string $id)
     {
-        return Supplier::findOrFail($id);
+        return Sale::findOrFail($id);
     }
 
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(SupplierRequest $request, string $id)
+    public function update(SaleRequest $request, string $id)
     {
         $validated = $request->validated();
 
-        $supplier = Supplier::findOrFail($id);
+        $sale = Sale::findOrFail($id);
 
-        $supplier->update($validated);
+        $sale->update($validated);
 
-        return $supplier;
+        return $sale;
     }
 
     /**
@@ -75,9 +75,9 @@ class SupplierController extends Controller
      */
     public function destroy(string $id)
     {
-        $supplier = Supplier::findOrFail($id);
-        $supplier->delete();
+        $sale = Sale::findOrFail($id);
+        $sale->delete();
 
-        return $supplier;
+        return $sale;
     }
 }

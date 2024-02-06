@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
+use App\Models\Inventory;
 use Illuminate\Http\Request;
-use App\Http\Requests\UserRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\InventoryRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class UserController extends Controller
+class InventoryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,13 +17,13 @@ class UserController extends Controller
     public function index(Request $request)
     {
         // Query builder instance
-        $query = User::query();
+        $query = Inventory::query();
 
         // Cater Search use "keyword"
         if ($request->keyword) {
             $query->where(function ($query) use ($request) {
-                $query->where('lastname', 'like', '%' . $request->keyword . '%')
-                    ->orWhere('firstname', 'like', '%' . $request->keyword . '%');
+                $query->where('dealer', 'like', '%' . $request->keyword . '%')
+                    ->orWhere('model_name', 'like', '%' . $request->keyword . '%');
             });
         }
 
@@ -35,33 +36,18 @@ class UserController extends Controller
     }
 
     /**
-     * Display a listing of the resource.-same to index
+     * Display a listing of the resource.
      */
     public function all(Request $request)
     {
-        // Query builder instance
-        $query = User::query();
-
-        // Cater Search use "keyword"
-        if ($request->keyword) {
-            $query->where(function ($query) use ($request) {
-                $query->where('lastname', 'like', '%' . $request->keyword . '%')
-                    ->orWhere('firstname', 'like', '%' . $request->keyword . '%');
-            });
-        }
-
-        // Pagination based on the number set; You can change the number below
-        $perPage = 3;
-        return $query->paginate($perPage);
-
-        // Show all data; Uncomment if necessary
-        // return User::all();
+        // Show data based on logged user
+        return Inventory::all();
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserRequest $request)
+    public function store(InventoryRequest $request)
     {
         // $validated = $request->validated();
 
@@ -82,7 +68,7 @@ class UserController extends Controller
             $validated['image'] = $request->file('image')->storePublicly('user', 'public');
         }
 
-        $user = User::create($validated);
+        $user = Inventory::create($validated);
 
         return $user;
     }
@@ -92,23 +78,21 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        return User::findOrFail($id);
+        return Inventory::findOrFail($id);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserRequest $request, string $id)
-{
-    $validated = $request->validated();
+    public function update(InventoryRequest $request, string $id)
+    {
+        $validated = $request->validated();
 
-    // Check if a file was uploaded
-    if ($request->hasFile('image')) {
         // Upload Image to Backend and Store Image Path
         $validated['image'] = $request->file('image')->storePublicly('user', 'public');
 
         // Get Info by Id 
-        $user = User::findOrFail($id);
+        $user = Inventory::findOrFail($id);
 
         // Delete Previous Image
         if (!is_null($user->image)) {
@@ -120,24 +104,13 @@ class UserController extends Controller
 
         return $user;
     }
-    
-    // If no file was uploaded or if the file is not valid, proceed without updating the image
-    // Get Info by Id 
-    $user = User::findOrFail($id);
-
-    // Update New Info without modifying the image
-    $user->update($validated);
-
-    return $user;
-}
-
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        $user = User::findOrFail($id);
+        $user = Inventory::findOrFail($id);
 
         //Delete image in laravel
         if (!is_null($user->image)) {
