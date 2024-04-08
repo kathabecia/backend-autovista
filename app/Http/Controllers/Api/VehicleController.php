@@ -36,7 +36,7 @@ class VehicleController extends Controller
             });
         }
 
-        $perPage = 3;
+        $perPage = 6;
         $vehicles = $query->paginate($perPage);
 
         return $vehicles;

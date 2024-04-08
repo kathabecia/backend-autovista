@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\ManufacturerController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\QueryController;
+use App\Http\Controllers\Query2Controller;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -127,5 +128,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     
     Route::controller(QueryController::class)->group(function () {
         Route::get('/sales/trends',               'salesTrends');
+    });
+
+    Route::controller(Query2Controller::class)->group(function () {
+        Route::get('/query/supplier',               'querySupplier');
     });
 });
